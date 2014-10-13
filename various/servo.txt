@@ -1,0 +1,7 @@
+sudo ./servod
+
+
+poi da codice python
+
+import os
+os.system("echo 1=180 > /dev/servoblaster")

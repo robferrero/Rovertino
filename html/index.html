@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content = "height = device-height, width = 420, user-scalable = no" /> 
+        <title>WebIOPi | First Control</title>
+        <script type="text/javascript" src="/webiopi.js"></script>
+        <script type="text/javascript">
+        
+        //example in https://code.google.com/p/webiopi/wiki/JAVASCRIPT
+
+        webiopi().ready(function() {
+            // Following function will process data received from set/getLightHours macro.
+            var updateLightHours = function(macro, args, response) {
+                var hours = response.split(";");
+                // Following lines use jQuery functions
+                $("#inputOn").val(hours[0]);
+                $("#inputOff").val(hours[1]);
+            }
+
+            var updateSonarDistance = function(macro, args, response) {
+                var distance = response;
+                $("#sonarDist").val(distance);
+            }
+            
+            // Immediately call getLightHours macro to update the UI with current values
+            // "getLightHours" refers to macro name
+            // [] is an empty array, because getLightHours macro does not take any argument
+            // updateLightHours is the callback function, defined above
+            webiopi().callMacro("getLightHours", [], updateLightHours);
+            
+            webiopi().callMacro("queryUltra", [], updateSonarDistance);
+            
+            //var servoPan_TIlt =  [24,25];
+            
+            // Arguments sent to the macro
+            var hours = [$("#inputOn").val(), $("#inputOff").val()];
+            var distance =[$("#sonarDist").val()];    
+            
+            var content;
+            var button ;
+            
+            //content = $("#controlLight");
+            // Create a button to call setLightHours macro
+            //var sendButton = webiopi().createMacroButton("sendButton", "Send", "setLightHours" , hours);
+            // Append the button to the controls box using a jQuery function
+            //content.append(sendButton);
+            
+            // Create a "Light" labelled button for GPIO 18
+            //var button = webiopi().createGPIOButton(18, "Light");
+            //content.append(button);
+           
+            
+            //fastright e fastleft non può funzionare con 4 motrici perche' si frenano a vicenda
+            content = $("#1T_lf");        
+            //button = webiopi().createMacroButton("bt_Lup", "FL", "fastLeft");
+            //content.append(button);
+            button = webiopi().createGPIOButton(4, "LeftBump");
+            content.append(button);
+            
+            content = $("#1T_cn");   
+            button = webiopi().createMacroButton("bt_up", "/\\", "forward");
+            content.append(button);
+            
+            content = $("#1T_rg");   
+            //button = webiopi().createMacroButton("bt_Rup", "FR", "fastRight");
+            //content.append(button);
+            button = webiopi().createGPIOButton(17, "RightBump");
+            content.append(button);
+            
+            content = $("#1C_lf");   
+            button = webiopi().createMacroButton("bt_left", "<", "turnLeft");
+            content.append(button);
+            
+            content = $("#1C_cn");   
+            button = webiopi().createMacroButton("bt_stop", "X", "stop");
+            content.append(button);
+            
+            content = $("#1C_rg");   
+            button = webiopi().createMacroButton("bt_right", ">", "turnRight");
+            content.append(button);
+            
+            content = $("#1B_lf");   
+            //button = webiopi().createMacroButton("bt_Ldown", "BL", "backLeft");
+            //content.append(button);
+            
+            content = $("#1B_cn");              
+            button = webiopi().createMacroButton("bt_down", "\\/", "reverse");
+            content.append(button);
+            
+            content = $("#1B_rg");   
+            //button = webiopi().createMacroButton("bt_Rdown", "BR", "backRight");
+            //content.append(button);
+            
+            content = $("#prg1");
+            //button = webiopi().createMacroButton("bt_sonar", "sonar", "queryUltra");
+            //content.append(button);
+            
+            content = $("#PT_yes");
+            button = webiopi().createMacroButton("bt_yes", "yes", "yes");
+            content.append(button);
+            
+            content = $("#PT_no");
+            button = webiopi().createMacroButton("bt_no", "no", "no");
+            content.append(button);
+            
+            content = $("#PT_cn");
+            button = webiopi().createMacroButton("bt_cn", "center", "PTcenter");
+            content.append(button);
+            
+            content = $("#PT_up");
+            button = webiopi().createMacroButton("bt_Tu", "up", "TiltUp");
+            content.append(button);
+
+            content = $("#PT_dw");
+            button = webiopi().createMacroButton("bt_Td", "down", "TiltDown");
+            content.append(button);
+
+            content = $("#PT_lf");
+            button = webiopi().createMacroButton("bt_Pl", "left", "PanLeft");
+            content.append(button);
+
+            content = $("#PT_rg");
+            button = webiopi().createMacroButton("bt_Pr", "right", "PanRight");
+            content.append(button);
+          
+            
+            content = $("#Slider");
+            // Only for Chrome and Safari, create a slider that pulse out a 0-100% duty cycle ratio on GPIO 24
+            //button = webiopi().createRatioSlider(24);
+            //content.append(button);
+                   
+            // Only for Chrome and Safari, create a slider that pulse out a -45 to +45° angle on GPIO 25
+            //button = webiopi().createAngleSlider(25);
+            //content.append(button);
+            
+            // Refresh GPIO buttons
+            // pass true to refresh repeatedly of false to refresh once
+            webiopi().refreshGPIO(true);
+        });
+                
+        </script>
+        <style type="text/css">
+                button {
+                        display: block;
+                        margin: 3px 3px 3px 3px;
+                        width: 140px;
+                        height: 40px;
+                        font-size: 18pt;
+                        font-weight: bold;
+                        color: white;
+                }
+                
+                #gpio4.LOW {
+                        background-color: Red;
+                }
+                
+                #gpio4.HIGH {
+                        background-color: Blue;
+                }
+                
+                #gpio17.LOW {
+                        background-color: Red;
+                }
+                
+                #gpio17.HIGH {
+                        background-color: Blue;
+                }
+
+                #gpio18.LOW {
+                        background-color: Black;
+                }
+                
+                #gpio18.HIGH {
+                        background-color: Blue;
+                }
+                .container{
+                  float: left;
+                  clear: left;
+                  border: 1px dotted;
+                  width: 100%;
+                }
+
+                .container3{
+                  width: 486px;
+                  float: left;
+                  clear: left;
+                  color: red;
+                  border: 1px dotted;
+                }
+
+                .left{
+                  float: left;
+                  width: 10%;
+                  height: 40px;
+                  border: 1px dotted;
+                }
+                 
+                .left33{
+                  float: left;
+                  width: 33%;
+                  height: 40px;
+                  border: 1px dotted;
+                }
+                
+                .left_dummy {
+                  float: left;
+                  width: 34%;
+                }
+                 
+                .left_dummy10 {
+                  float: left;
+                  width: 10px;
+                }
+                
+                .right {
+                  float: right;
+                  width: 10%;
+                  height: 40px;
+                  border: 1px solid;
+                }
+                
+ .container-table{
+    display:table;
+    width:90%;
+    border-collapse: collapse;
+    }
+    
+ .heading{
+     font-weight: bold;
+     display:table-row;
+     background-color:#C91622;
+     text-align: center;
+     line-height: 25px;
+     font-size: 14px;
+     font-family:georgia;
+     color:#fff;
+     
+ }
+ .table-row{  
+     display:table-row;
+     text-align: center;
+ }
+ .col{ 
+    display:table-cell;
+     border: 1px solid #CCC;
+ }
+        </style>
+</head>
+<body>
+Prove RoVerto 2014 07 21
+        <div id="controlLight" align="center">
+Turn On at :<input type="text" id="inputOn" /> &nbsp; &nbsp; &nbsp;
+Turn Off at :<input type="text" id="inputOff" /> &nbsp; &nbsp; &nbsp;
+Sonar Distance : <input type="text" id="sonarDist" /><br/>
+        </div>
+        <div id="Slider"></div>
+     
+ <div class="container-table">    
+    <div class="table-row">
+        <div class="container-table">
+            <div class="heading">
+                 <div class="col" >....</div>
+                 <div class="col" >movement</div>
+                 <div class="col" >....</div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id="1T_lf"> </div>
+                 <div class="col" id="1T_cn"> </div>
+                 <div class="col" id="1T_rg"> </div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id="1C_lf"> </div>
+                 <div class="col" id="1C_cn"> </div>
+                 <div class="col" id="1C_rg"> </div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id="1B_lf">7</div>
+                 <div class="col" id="1B_cn"> </div>
+                 <div class="col" id="1B_rg">9</div>
+            </div>
+            </div>     
+        <div class="col"> &nbsp;</div>
+        <div class="container-table">
+            <div class="heading">
+                 <div class="col">....</div>
+                 <div class="col">pan-tilt</div>
+                 <div class="col">....</div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id ="PT_yes"> </div>
+                 <div class="col" id ="PT_up"> </div>
+                 <div class="col" id ="PT_no"> </div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id ="PT_lf"> </div>
+                 <div class="col" id ="PT_cn"> </div>
+                 <div class="col" id ="PT_rg"> </div>
+            </div>
+            <div class="table-row">
+                 <div class="col" id ="PT_7">7a</div>
+                 <div class="col" id ="PT_dw"> </div>
+                 <div class="col" id ="PT_9">9a</div>
+            </div>
+        </div>     
+        <div class="col"> &nbsp;</div>
+        <div class="container-table">
+            <div class="heading">
+                    <div class="col">prgrms</div>
+            </div>
+            <div class="table-row">
+                <div class="col" id ="prg1">prg1</div>
+                <div class="col" >prg2</div>
+                <div class="col" >prg3</div>
+            </div>   
+            <div class="table-row">
+                <div class="col" >fcTrack</div>
+                <div class="col" >fcFollow</div>
+                <div class="col" >goAround</div>
+            </div>   
+         </div>
+    </div>   
+</div>     
+<div class="left" id="L_down">
+<div http://blog.miguelgrinberg.com/post/how-to-build-and-run-mjpg-streamer-on-the-raspberry-pi >
+<img src="http://192.168.2.25:8080/?action=stream">   
+</body>
+</html>
